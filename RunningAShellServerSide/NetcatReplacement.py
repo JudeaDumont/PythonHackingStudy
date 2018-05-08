@@ -73,10 +73,8 @@ def client_handler(client_socket):
 
     # now we go into another loop if a command shell was requested
     if command:
-
+        client_socket.send("BHP:# ")
         while True:
-            # show a simple prompt
-            client_socket.send("<BHP:#> ")
 
             # now we receive until we see a linefeed (enter key)
             cmd_buffer = ""
@@ -85,7 +83,7 @@ def client_handler(client_socket):
 
             # we have a valid command so execute it and send back the results
             response = run_command(cmd_buffer)
-            print(response)
+            print("received: " + response)
             # send back the response
             client_socket.send(response)
 
@@ -101,33 +99,32 @@ def server_loop():
 
     while True:
         client_socket, addr = server.accept()
-
+        print("Accepted Connection from: " + ' '.join(map(str, addr)))
         # spin off a thread to handle our new client
         client_thread = threading.Thread(target=client_handler, args=(client_socket,))
         client_thread.start()
 
     # if we don't listen we are a client....make it so.
 def client_sender(client_buffer):
-
+    response = ""
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         client.connect((target, port))  # connect to our target host
         if len(client_buffer):
-            client.send(client_buffer)
+            client.send("\n")
             while True:
-                recieving_length = 1  # wait for data
-                response = ""
-                while recieving_length:
+                receiving_length = 1
+                while receiving_length:
                     data = client.recv(4096)
-                    recieving_length = len(data)
+                    receiving_length = len(data)
                     response += data
-                    if recieving_length < 4096:
-                        print("recieving_length < 4096")
+                    if receiving_length < 4096:
                         break
-                print("response:" + response)
-                buffer = raw_input("")  # wait for input
-                buffer += "\n"
-                client.send(buffer)  # send it off
+                print('\tResponse:\n' + response)
+                command = sys.stdin.read()  # wait for input
+                command += "\n"
+                client.send(command)  # send it off
+                response = ""
     except Exception, e:
         # port is closed, server refused, peer disconnected, etc.
         print(e)
@@ -208,7 +205,7 @@ def main():
         # read in the buffer from the commandline
         # this will block, so send CTRL-D if not sending input
         # to stdin
-        buffer = sys.stdin.read()
+        buffer = "\n"
 
         # send data off
         client_sender(buffer)

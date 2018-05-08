@@ -20,25 +20,25 @@ def usage():
 #todo: client pushes a specific tag which speicifies a command to the server to distinguish
 #todo: between commands to execute and other potential commands that are script internal
 def client_sender(client_buffer):
+    response = ""
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         client.connect((target, port))  # connect to our target host
         if len(client_buffer):
-            client.send(client_buffer)
+            client.send("\n")
             while True:
-                recieving_length = 1  # wait for data
-                response = ""
-                while recieving_length:
+                receiving_length = 1
+                while receiving_length:
                     data = client.recv(4096)
-                    recieving_length = len(data)
+                    receiving_length = len(data)
                     response += data
-                    if recieving_length < 4096:
-                        print("recieving_length < 4096")
+                    if receiving_length < 4096:
                         break
                 print("response:" + response)
-                buffer = raw_input("")  # wait for input
-                buffer += "\n"
-                client.send(buffer)  # send it off
+                command = sys.stdin.read()  # wait for input
+                command += "\n"
+                client.send(command)  # send it off
+                response = ""
     except Exception, e:
         # port is closed, server refused, peer disconnected, etc.
         print(e)
