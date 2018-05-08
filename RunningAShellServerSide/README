@@ -1,0 +1,6 @@
+#1. Pass arguments to the server for the port number and ip to listen on if necessary
+#2. You may need to change the port number and or IP if it is unavailable
+#3. Run the Attacker Client IN DEBUG MODE within an IDE With the IP and Port Arguments of the Server Client, Check the usage with -h
+#4. Entering Ctrl + D will end the program. Pressing enter will need to cause the command to be sent to the server.
+#5. If pressing enter does not cause some kind of output client side then the environment needs to change or DEBUG MODE WITHIN AN IDE needs to be used.
+#6. Enter ls twice to see that the server is executing commands sent to it from the attacker client and sending the results back to the client

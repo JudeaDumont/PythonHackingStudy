@@ -3,7 +3,7 @@ import socket
 import getopt
 import threading
 import subprocess
-target = "192.168.0.4"
+target = ""
 port = 9999
 
 
@@ -17,6 +17,8 @@ def usage():
     sys.exit(0)
 
 
+#todo: client pushes a specific tag which speicifies a command to the server to distinguish
+#todo: between commands to execute and other potential commands that are script internal
 def client_sender(client_buffer):
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -31,8 +33,9 @@ def client_sender(client_buffer):
                     recieving_length = len(data)
                     response += data
                     if recieving_length < 4096:
+                        print("recieving_length < 4096")
                         break
-                print(response,)
+                print("response:" + response)
                 buffer = raw_input("")  # wait for input
                 buffer += "\n"
                 client.send(buffer)  # send it off
@@ -44,8 +47,18 @@ def client_sender(client_buffer):
 
 
 def main():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("8.8.8.8", 80))
+    except:
+        print("No Internet Access")
+    thismachinesip = s.getsockname()[0]
+    print("This Machines IP:" + s.getsockname()[0])
+    s.close()
+
     global port
     global target
+    target = thismachinesip
     try:
         opts, args = getopt.getopt(sys.argv[1:], "hle:t:p:cu:",
                                    ["help", "target", "port"])
