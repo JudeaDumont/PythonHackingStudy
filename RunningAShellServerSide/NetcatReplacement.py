@@ -13,7 +13,7 @@ upload = False
 execute = ""
 target = ""
 upload_destination = ""
-port = 0
+port = 9999
 thismachinesip = ""
 
 
